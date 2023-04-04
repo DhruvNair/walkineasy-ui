@@ -1,12 +1,16 @@
 import { Container, Link, styled, Typography } from "@mui/material";
 import { db } from "../../../firebase";
 import { setDoc, doc, getDoc } from "firebase/firestore";
-import {getAuth, createUserWithEmailAndPassword, sendSignInLinkToEmail} from "firebase/auth";
+import {
+	getAuth,
+	createUserWithEmailAndPassword,
+	sendSignInLinkToEmail,
+} from "firebase/auth";
 import ClinicRegisterForm from "../../../forms/ClinicRegisterForm";
-import useToast from "../../../hooks/useToast";
 import { useNavigate } from "react-router-dom";
 import { NavLink as RouterLink } from "react-router-dom";
 import { faker } from "@faker-js/faker";
+import { useToastContext } from "../../../App";
 
 const StyledContent = styled("div")(({ theme }) => ({
 	maxWidth: 480,
@@ -19,16 +23,16 @@ const StyledContent = styled("div")(({ theme }) => ({
 }));
 
 const ClinicRegister = () => {
-	const { showToast, Toast } = useToast();
+	const { showToast } = useToastContext();
 	const navigate = useNavigate();
 	const auth = getAuth();
 	const actionCodeSettings = {
 		// URL you want to redirect back to. The domain (www.example.com) for this
 		// URL must be in the authorized domains list in the Firebase Console.
-		url: 'http://localhost:3000/clinic/auth/emailVerified',
+		url: "http://localhost:3000/clinic/auth/emailVerified",
 		//url: 'https://www.example.com/finishSignUp?cartId=1234',
 		// This must be true.
-		handleCodeInApp: true
+		handleCodeInApp: true,
 	};
 	const onRegister = async ({
 		name,
@@ -59,52 +63,78 @@ const ClinicRegister = () => {
 				email,
 				password
 			);
+			const user = userCredential.user;
 			const ref = doc(db, "Clinic Record", email);
 			const docSnap = await getDoc(ref);
 			if (docSnap.exists()) {
-				showToast("Account Already Exists!");
+				showToast(
+					"Past account deletion was incomplete! Contact system administrator."
+				);
 			} else {
-				await setDoc(ref, {
-					name,
-					email,
-					phone,
-					street,
-					city,
-					province,
-					standardEquipment,
-					diagnosticEquipment,
-					laboratoryEquipment,
-					id: faker.datatype.uuid(),
-					doctors: [],
-				})
-					.then(() => {
-						console.log("data added successfully");
-						sendSignInLinkToEmail(auth, email, actionCodeSettings)
-							.then(() => {
-								alert("email sent")
-							})
-							.catch((error) => {
-								alert(error.message)
-								const errorCode = error.code;
-								const errorMessage = error.message;
-								// ...
-							});
-						showToast("Registration Successful", "success");
-						navigate("/clinic/");
-					})
-					.catch((error: Error) => {
-						console.log(
-							"Unsuccessful data operation, error:" + error
-						);
-						showToast("Something went wrong", "error");
+				try {
+					await setDoc(ref, {
+						name,
+						email,
+						phone,
+						street,
+						city,
+						province,
+						standardEquipment,
+						clinicalEquipment: [],
+						diagnosticEquipment,
+						laboratoryEquipment,
+						id: user.uid,
+						doctors: [],
 					});
+					try {
+						await sendSignInLinkToEmail(
+							auth,
+							email,
+							actionCodeSettings
+						);
+						showToast(
+							`A verification link has been sent to ${email}`,
+							"success"
+						);
+						navigate("/clinic/");
+					} catch (error) {
+						if (error instanceof Error)
+							showToast(
+								"Error when sending the verification email: " +
+									error.message,
+								"error"
+							);
+						else
+							showToast(
+								"There was an unexpected error when sending the verification email.",
+								"error"
+							);
+					}
+				} catch (error) {
+					if (error instanceof Error)
+						showToast(
+							"Error when saving data to the database: " +
+								error.message,
+							"error"
+						);
+					else
+						showToast(
+							"There was an unexpected error when saving data to the database. Contact system administrator.",
+							"error"
+						);
+				}
 			}
 		} catch (error) {
-			if (error instanceof Error) {
-				showToast(error.message, "error");
-			} else {
-				console.log("Unknown error: ", error);
-			}
+			if (error instanceof Error)
+				showToast(
+					"Error when registering user: " + error.message,
+					"error"
+				);
+			else
+				showToast(
+					"An unknown error has occured during user registration!",
+					"error"
+				);
 		}
 	};
 	return (
@@ -129,7 +159,6 @@ const ClinicRegister = () => {
 					onRegister={onRegister}
 				/>
 			</StyledContent>
-			{Toast}
 		</Container>
 	);
 };

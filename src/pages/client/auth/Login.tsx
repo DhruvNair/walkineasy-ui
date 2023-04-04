@@ -1,13 +1,12 @@
 import { Container, Link, styled, Typography } from "@mui/material";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
-import { LoginForm } from "../../../forms/LoginForm";
-import useToast from "../../../hooks/useToast";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { NavLink as RouterLink } from "react-router-dom";
+import { useToastContext } from "../../../App";
+import { db } from "../../../firebase";
+import { LoginForm } from "../../../forms/LoginForm";
 import { login, UserObject } from "../../../slices/authSlice";
 import { useAppDispatch } from "../../../store";
-import { db } from "../../../firebase";
-import { NavLink as RouterLink } from "react-router-dom";
 
 const StyledContent = styled("div")(({ theme }) => ({
 	maxWidth: 480,
@@ -20,29 +19,29 @@ const StyledContent = styled("div")(({ theme }) => ({
 }));
 
 const ClientLogin = () => {
-	const { showToast, Toast } = useToast();
-	const navigate = useNavigate();
+	const { showToast } = useToastContext();
 	const dispatch = useAppDispatch();
 	const onLogin = async (email: string, password: string) => {
-		const auth = getAuth();
-		signInWithEmailAndPassword(auth, email, password)
-			.then(async (userCredential) => {
-				const ref = doc(db, "Client Record", email);
-				const docSnap = await getDoc(ref);
-				if (docSnap.exists()) {
-					const userData = docSnap.data() as UserObject;
-					dispatch(login({ userType: "client", user: userData }));
-					showToast("User verified!");
-				} else {
-					showToast(
-						"This account is registered as a Clinic!",
-						"error"
-					);
-				}
-			})
-			.catch((error) => {
-				showToast(error.message, "error");
-			});
+		try {
+			const auth = getAuth();
+			const userCredential = await signInWithEmailAndPassword(
+				auth,
+				email,
+				password
+			);
+			const ref = doc(db, "Client Record", email);
+			const docSnap = await getDoc(ref);
+			if (docSnap.exists()) {
+				const userData = docSnap.data() as UserObject;
+				dispatch(login({ userType: "client", user: userData }));
+				showToast(`Logged in as ${userData.name}!`, "success");
+			} else {
+				showToast("This account is registered as a Clinic!", "error");
+			}
+		} catch (error) {
+			if (error instanceof Error) showToast(error.message, "error");
+			else showToast("An unknown error has occured!", "error");
+		}
 	};
 	return (
 		<Container maxWidth="sm">
@@ -68,7 +67,6 @@ const ClientLogin = () => {
 					onLogin={onLogin}
 				/>
 			</StyledContent>
-			{Toast}
 		</Container>
 	);
 };

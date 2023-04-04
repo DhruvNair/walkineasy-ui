@@ -25,7 +25,6 @@ import { useEffect, useState } from "react";
 import BasicModal from "../../components/modal";
 import { db, rtdb } from "../../firebase";
 import useResponsive from "../../hooks/useResponsive";
-import useToast from "../../hooks/useToast";
 import {
 	ClinicUserObject,
 	DoctorLiveDetails,
@@ -33,6 +32,7 @@ import {
 } from "../../slices/authSlice";
 import { useAppSelector } from "../../store";
 import palette from "../../theme/palette";
+import { useToastContext } from "../../App";
 
 const specializations = [
 	"Allergy and immunology",
@@ -190,9 +190,9 @@ function Row({
 			<TableRow>
 				<TableCell
 					style={{ paddingBottom: 0, paddingTop: 0 }}
-					colSpan={6}
+					colSpan={5}
 				>
-					<Collapse in={open} timeout="auto" unmountOnExit>
+					<Collapse in={open} timeout="auto">
 						<Box sx={{ margin: 1 }}>
 							{!smUp && (
 								<Stack direction="row" sx={{ marginY: 4 }}>
@@ -357,7 +357,7 @@ export default function CollapsibleTable({
 		const actualData = data.map((each) => each.data() as ClinicUserObject);
 		setClinicData(actualData);
 	};
-	const { showToast, Toast } = useToast();
+	const { showToast } = useToastContext();
 	useEffect(() => {
 		fetchClinicData();
 	}, []);
@@ -423,7 +423,6 @@ export default function CollapsibleTable({
 					<Typography>No clinics currently available</Typography>
 				)}
 			</TableContainer>
-			{Toast}
 		</>
 	);
 }

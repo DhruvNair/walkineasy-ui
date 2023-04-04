@@ -3,11 +3,11 @@ import { db } from "../../../firebase";
 import { setDoc, doc, getDoc } from "firebase/firestore";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import ClientRegisterForm from "../../../forms/ClientRegisterForm";
-import useToast from "../../../hooks/useToast";
 import { useNavigate } from "react-router-dom";
 import { NavLink as RouterLink } from "react-router-dom";
-import {  sendSignInLinkToEmail } from "firebase/auth";
-import firebase from "firebase/compat/app";
+import { sendSignInLinkToEmail } from "firebase/auth";
+import { useToastContext } from "../../../App";
+import { UserObject } from "../../../slices/authSlice";
 
 const StyledContent = styled("div")(({ theme }) => ({
 	maxWidth: 480,
@@ -20,17 +20,17 @@ const StyledContent = styled("div")(({ theme }) => ({
 }));
 
 const ClientRegister = () => {
-	const { showToast, Toast } = useToast();
+	const { showToast } = useToastContext();
 	const navigate = useNavigate();
 	const auth = getAuth();
 	// send email to verify account
 	const actionCodeSettings = {
 		// URL you want to redirect back to. The domain (www.example.com) for this
 		// URL must be in the authorized domains list in the Firebase Console.
-		url: 'http://localhost:3000/clinic/auth/emailVerified',
+		url: "http://localhost:3000/clinic/auth/emailVerified",
 		//url: 'https://www.example.com/finishSignUp?cartId=1234',
 		// This must be true.
-		handleCodeInApp: true
+		handleCodeInApp: true,
 	};
 	const onRegister = async ({
 		name,
@@ -40,23 +40,22 @@ const ClientRegister = () => {
 		city,
 		province,
 		password,
-	}: {
-		name: string;
-		email: string;
-		phone: string;
-		street: string;
-		city: string;
-		province: string;
-		password: string;
-	}) => {
-		createUserWithEmailAndPassword(auth, email, password)
-			.then(async (userCredential) => {
-				const user = userCredential.user;
-				const ref = doc(db, "Client Record", email);
-				const docSnap = await getDoc(ref);
-				if (docSnap.exists()) {
-					showToast("Account Already Exists!");
-				} else {
+	}: UserObject & { password: string }) => {
+		try {
+			const userCredential = await createUserWithEmailAndPassword(
+				auth,
+				email,
+				password
+			);
+			const user = userCredential.user;
+			const ref = doc(db, "Client Record", email);
+			const docSnap = await getDoc(ref);
+			if (docSnap.exists()) {
+				showToast(
+					"Past account deletion was incomplete! Contact system administrator."
+				);
+			} else {
+				try {
 					await setDoc(ref, {
 						name,
 						email,
@@ -64,40 +63,57 @@ const ClientRegister = () => {
 						street,
 						city,
 						province,
-					})
-						.then(() => {
-							console.log("data added successfully");
-							sendSignInLinkToEmail(auth, email, actionCodeSettings)
-								.then(() => {
-									alert("email sent")
-								})
-								.catch((error) => {
-									alert(error.message)
-									const errorCode = error.code;
-									const errorMessage = error.message;
-									// ...
-								});
-							showToast("An OTP has been sent to ...", "success");
-							//navigate("/client/auth/firebaseAuth");
-							navigate("/client/");
-
-						})
-						.catch((error: Error) => {
-							console.log(
-								"Unsuccessful data operation, error:" + error
+					});
+					try {
+						await sendSignInLinkToEmail(
+							auth,
+							email,
+							actionCodeSettings
+						);
+						showToast(
+							`A verification link has been sent to ${email}`,
+							"success"
+						);
+						navigate("/client/");
+					} catch (error) {
+						if (error instanceof Error)
+							showToast(
+								"Error when sending the verification email: " +
+									error.message,
+								"error"
 							);
-							showToast("Something went wrong", "error");
-						});
+						else
+							showToast(
+								"There was an unexpected error when sending the verification email.",
+								"error"
+							);
+					}
+				} catch (error) {
+					if (error instanceof Error)
+						showToast(
+							"Error when saving data to the database: " +
+								error.message,
+							"error"
+						);
+					else
+						showToast(
+							"There was an unexpected error when saving data to the database. Contact system administrator.",
+							"error"
+						);
 				}
-			})
-			.catch((error) => {
-				showToast("eRROR " +error.message, "error");
-			});
-
-
-
-
-
+			}
+		} catch (error) {
+			if (error instanceof Error)
+				showToast(
+					"Error when registering user: " + error.message,
+					"error"
+				);
+			else
+				showToast(
+					"An unknown error has occured during user registration!",
+					"error"
+				);
+		}
 	};
 	return (
 		<Container maxWidth="sm">
@@ -121,7 +137,6 @@ const ClientRegister = () => {
 					onRegister={onRegister}
 				/>
 			</StyledContent>
-			{Toast}
 		</Container>
 	);
 };

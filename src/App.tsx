@@ -8,13 +8,34 @@ import ThemeProvider from "./theme";
 //
 import secureLocalStorage from "react-secure-storage";
 import { useAppDispatch } from "./store";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState, useContext } from "react";
 import { db } from "./firebase";
 import { doc, getDoc } from "@firebase/firestore";
 import { ClinicUserObject, login, UserObject } from "./slices/authSlice";
-import { Box, CircularProgress } from "@mui/material";
+import { AlertColor, Box, CircularProgress } from "@mui/material";
+import useToast from "./hooks/useToast";
 
 // ----------------------------------------------------------------------
+
+interface ToastContextProps {
+	showToast: (text: string, type?: AlertColor) => void;
+}
+
+const ToastContext = createContext<ToastContextProps>({
+	showToast: () => {},
+});
+
+export const useToastContext = () => useContext(ToastContext);
+
+export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
+	const { showToast, Toast } = useToast("right");
+	return (
+		<ToastContext.Provider value={{ showToast }}>
+			{children}
+			{Toast}
+		</ToastContext.Provider>
+	);
+};
 
 export default function App() {
 	const [loaded, setLoaded] = useState(false);
@@ -56,7 +77,9 @@ export default function App() {
 		<HelmetProvider>
 			<BrowserRouter>
 				<ThemeProvider>
-					<Router />
+					<ToastProvider>
+						<Router />
+					</ToastProvider>
 				</ThemeProvider>
 			</BrowserRouter>
 		</HelmetProvider>

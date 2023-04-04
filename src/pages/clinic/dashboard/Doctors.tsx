@@ -154,54 +154,55 @@ function ColumnGroupingTable() {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{rows
-							.slice(
-								page * rowsPerPage,
-								page * rowsPerPage + rowsPerPage
-							)
-							.map((row, index) => {
-								const isHidden = hiddenRows.includes(index);
-								if (isHidden) {
-									return null;
-								}
-								return (
-									<TableRow
-										hover
-										role="checkbox"
-										tabIndex={-1}
-										key={row.specialization}
-									>
-										<TableCell
-											key={columns[0].id}
-											align={columns[0].align}
+						{rows &&
+							rows
+								.slice(
+									page * rowsPerPage,
+									page * rowsPerPage + rowsPerPage
+								)
+								.map((row, index) => {
+									const isHidden = hiddenRows.includes(index);
+									if (isHidden) {
+										return null;
+									}
+									return (
+										<TableRow
+											hover
+											role="checkbox"
+											tabIndex={-1}
+											key={row.specialization}
 										>
-											{row[columns[0].id]}
-										</TableCell>
-										<TableCell
-											key={columns[1].id}
-											align={columns[1].align}
-										>
-											{row[columns[1].id]}
-										</TableCell>
-										<TableCell
-											key={"action"}
-											align={"center"}
-										>
-											<Button
-												startIcon={
-													<HighlightOffRoundedIcon />
-												}
-												color="error"
-												onClick={() =>
-													delete_doctor(row.id)
-												}
+											<TableCell
+												key={columns[0].id}
+												align={columns[0].align}
 											>
-												Delete
-											</Button>
-										</TableCell>
-									</TableRow>
-								);
-							})}
+												{row[columns[0].id]}
+											</TableCell>
+											<TableCell
+												key={columns[1].id}
+												align={columns[1].align}
+											>
+												{row[columns[1].id]}
+											</TableCell>
+											<TableCell
+												key={"action"}
+												align={"center"}
+											>
+												<Button
+													startIcon={
+														<HighlightOffRoundedIcon />
+													}
+													color="error"
+													onClick={() =>
+														delete_doctor(row.id)
+													}
+												>
+													Delete
+												</Button>
+											</TableCell>
+										</TableRow>
+									);
+								})}
 					</TableBody>
 				</Table>
 			</TableContainer>
