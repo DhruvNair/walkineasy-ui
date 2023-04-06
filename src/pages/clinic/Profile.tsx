@@ -1,19 +1,19 @@
 import { doc, getDoc, setDoc } from "@firebase/firestore";
+import { LoadingButton } from "@mui/lab";
 import { Card, CardContent, Stack, TextField } from "@mui/material";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import { useFormik } from "formik";
+import _ from "lodash";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { array, object, string } from "yup";
 import { useToastContext } from "../../App";
 import { db } from "../../firebase";
 import { phoneRegExp } from "../../forms/ClinicRegisterForm";
-import { ClinicUserObject } from "../../slices/authSlice";
-import { useAppSelector } from "../../store";
-import _ from "lodash";
-import { LoadingButton } from "@mui/lab";
+import { ClinicUserObject, setUserObject } from "../../slices/authSlice";
+import { useAppDispatch, useAppSelector } from "../../store";
 
 const clinicProfileSchema = object({
 	name: string().required("We need to call you something!"),
@@ -38,6 +38,7 @@ export default function ClinicProfile() {
 	const { showToast } = useToastContext();
 	const [loading, setLoading] = useState(false);
 	const user = useAppSelector((state) => state.auth.user) as ClinicUserObject;
+	const dispatch = useAppDispatch();
 	const formik = useFormik({
 		initialValues: user,
 		validationSchema: clinicProfileSchema,
@@ -54,7 +55,9 @@ export default function ClinicProfile() {
 		const ref = doc(db, "Clinic Record", user.email);
 		const docSnap = await getDoc(ref);
 		if (docSnap.exists()) {
-			formik.setValues(docSnap.data() as ClinicUserObject);
+			const data = docSnap.data() as ClinicUserObject;
+			dispatch(setUserObject(data));
+			formik.setValues(data);
 		} else {
 			showToast("Couldn't find data associated with this user");
 		}

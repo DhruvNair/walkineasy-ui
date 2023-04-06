@@ -1,5 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import secureLocalStorage from "react-secure-storage";
 
 export interface AuthState {
@@ -85,9 +84,15 @@ export const authSlice = createSlice({
 			secureLocalStorage.removeItem("email");
 			secureLocalStorage.removeItem("userType");
 		},
+		setUserObject: (
+			state,
+			action: PayloadAction<UserObject | ClinicUserObject>
+		) => {
+			state.user = action.payload;
+		},
 	},
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login, logout, setUserObject } = authSlice.actions;
 
 export default authSlice.reducer;
