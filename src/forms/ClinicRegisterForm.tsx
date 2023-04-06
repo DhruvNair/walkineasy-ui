@@ -43,7 +43,7 @@ type Props = {
 	}) => Promise<void>;
 };
 
-const phoneRegExp =
+export const phoneRegExp =
 	/^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const clinicRegisterSchema = object({
@@ -122,16 +122,28 @@ const diagnosticEquipment = [
 	{ label: "X-Ray", value: "X-Ray" },
 	{ label: "CT-Scan", value: "CT-Scan" },
 	{ label: "Ultrasound Machine", value: "Ultrasound Machine" },
-	{ label: "Electrocardiograph Monitors(ECG)", value: "Electrocardiograph Monitors(ECG)" },
-	{ label: "Magnetic Resonance Imaging (MRI)", value: "Magnetic Resonance Imaging (MRI)" },
+	{
+		label: "Electrocardiograph Monitors(ECG)",
+		value: "Electrocardiograph Monitors(ECG)",
+	},
+	{
+		label: "Magnetic Resonance Imaging (MRI)",
+		value: "Magnetic Resonance Imaging (MRI)",
+	},
 	{ label: "Incentive spirometer", value: "Incentive spirometer" },
-	{ label: "Automated External Defibrillator (AED)", value: "Automated External Defibrillator (AED)" },
+	{
+		label: "Automated External Defibrillator (AED)",
+		value: "Automated External Defibrillator (AED)",
+	},
 	{ label: "Aspirators", value: "Aspirators" },
 	{ label: "Resuscitation bags", value: "Resuscitation bags" },
 ];
 const laboratoryEquipment = [
 	{ label: "Chemistry analyzers", value: "Chemistry analyzers" },
-	{ label: "Deoxyribonucleic acid (DNA) analyzers", value: "Deoxyribonucleic acid (DNA) analyzers" },
+	{
+		label: "Deoxyribonucleic acid (DNA) analyzers",
+		value: "Deoxyribonucleic acid (DNA) analyzers",
+	},
 	{ label: "Glucose analyzers", value: "Glucose analyzers" },
 	{ label: "Hematology analyzers", value: "Hematology analyzers" },
 	{ label: "Urine analyzers", value: "Urine analyzers" },

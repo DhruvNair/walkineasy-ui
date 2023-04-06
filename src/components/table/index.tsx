@@ -397,8 +397,8 @@ export default function CollapsibleTable({
 
 	return (
 		<>
-			<TableContainer component={Paper}>
-				{visibleData.length > 0 ? (
+			{visibleData.length > 0 ? (
+				<TableContainer component={Paper}>
 					<Table aria-label="collapsible table">
 						<TableHead>
 							<TableRow>
@@ -419,10 +419,17 @@ export default function CollapsibleTable({
 							))}
 						</TableBody>
 					</Table>
-				) : (
-					<Typography>No clinics currently available</Typography>
-				)}
-			</TableContainer>
+				</TableContainer>
+			) : (
+				<Typography
+					align="center"
+					color="gray"
+					sx={{ pt: 3 }}
+					fontSize={53}
+				>
+					No clinics currently available
+				</Typography>
+			)}
 		</>
 	);
 }

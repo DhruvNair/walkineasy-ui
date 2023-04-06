@@ -18,6 +18,7 @@ import { useState } from "react";
 import { object, ref, string } from "yup";
 import Iconify from "../components/iconify";
 import { NavLink as RouterLink } from "react-router-dom";
+import { phoneRegExp } from "./ClinicRegisterForm";
 
 type Props = {
 	loginPath: string;
@@ -31,9 +32,6 @@ type Props = {
 		password: string;
 	}) => Promise<void>;
 };
-
-const phoneRegExp =
-	/^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const clientRegisterSchema = object({
 	name: string().required("We need to call you something!"),
