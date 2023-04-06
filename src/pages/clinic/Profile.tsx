@@ -1,5 +1,5 @@
 import { doc, getDoc, setDoc } from "@firebase/firestore";
-import { Stack, TextField } from "@mui/material";
+import { Card, CardContent, Stack, TextField } from "@mui/material";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
@@ -86,95 +86,108 @@ export default function ClinicProfile() {
 					direction={{ lg: "row", sm: "column" }}
 					justifyContent="space-evenly"
 				>
-					<Stack>
-						<Typography variant="subtitle1">
-							Contact details
-						</Typography>
-						<Stack mt={2} py={5} px={{ lg: 5 }} spacing={5}>
-							<TextField
-								name="name"
-								label="Name"
-								error={
-									formik.touched.name && !!formik.errors.name
-								}
-								helperText={
-									formik.touched.name && formik.errors.name
-								}
-								onChange={formik.handleChange}
-								onBlur={formik.handleBlur}
-								value={formik.values.name}
-							/>
-							<TextField
-								label="Email"
-								disabled
-								value={formik.values.email}
-							/>
-							<TextField
-								name="phone"
-								label="Phone"
-								error={
-									formik.touched.phone &&
-									!!formik.errors.phone
-								}
-								helperText={
-									formik.touched.phone && formik.errors.phone
-								}
-								onChange={formik.handleChange}
-								onBlur={formik.handleBlur}
-								value={formik.values.phone}
-							/>
-						</Stack>
-					</Stack>
-					<Stack>
-						<Typography variant="subtitle1">
-							Address details
-						</Typography>
-						<Stack mt={2} py={5} px={{ lg: 5 }} spacing={5}>
-							<TextField
-								name="street"
-								label="Street"
-								error={
-									formik.touched.street &&
-									!!formik.errors.street
-								}
-								helperText={
-									formik.touched.street &&
-									formik.errors.street
-								}
-								onChange={formik.handleChange}
-								onBlur={formik.handleBlur}
-								value={formik.values.street}
-							/>
-							<TextField
-								name="city"
-								label="City"
-								error={
-									formik.touched.city && !!formik.errors.city
-								}
-								helperText={
-									formik.touched.city && formik.errors.city
-								}
-								onChange={formik.handleChange}
-								onBlur={formik.handleBlur}
-								value={formik.values.city}
-							/>
-							<TextField
-								name="province"
-								label="Province"
-								error={
-									formik.touched.province &&
-									!!formik.errors.province
-								}
-								helperText={
-									formik.touched.province &&
-									formik.errors.province
-								}
-								onChange={formik.handleChange}
-								onBlur={formik.handleBlur}
-								value={formik.values.province}
-							/>
-						</Stack>
-					</Stack>
+					<Card>
+						<CardContent>
+							<Stack>
+								<Typography variant="subtitle1">
+									Contact details
+								</Typography>
+								<Stack mt={2} py={5} px={{ lg: 5 }} spacing={5}>
+									<TextField
+										name="name"
+										label="Name"
+										error={
+											formik.touched.name &&
+											!!formik.errors.name
+										}
+										helperText={
+											formik.touched.name &&
+											formik.errors.name
+										}
+										onChange={formik.handleChange}
+										onBlur={formik.handleBlur}
+										value={formik.values.name}
+									/>
+									<TextField
+										label="Email"
+										disabled
+										value={formik.values.email}
+									/>
+									<TextField
+										name="phone"
+										label="Phone"
+										error={
+											formik.touched.phone &&
+											!!formik.errors.phone
+										}
+										helperText={
+											formik.touched.phone &&
+											formik.errors.phone
+										}
+										onChange={formik.handleChange}
+										onBlur={formik.handleBlur}
+										value={formik.values.phone}
+									/>
+								</Stack>
+							</Stack>
+						</CardContent>
+					</Card>
+					<Card>
+						<CardContent>
+							<Stack>
+								<Typography variant="subtitle1">
+									Address details
+								</Typography>
+								<Stack mt={2} py={5} px={{ lg: 5 }} spacing={5}>
+									<TextField
+										name="street"
+										label="Street"
+										error={
+											formik.touched.street &&
+											!!formik.errors.street
+										}
+										helperText={
+											formik.touched.street &&
+											formik.errors.street
+										}
+										onChange={formik.handleChange}
+										onBlur={formik.handleBlur}
+										value={formik.values.street}
+									/>
+									<TextField
+										name="city"
+										label="City"
+										error={
+											formik.touched.city &&
+											!!formik.errors.city
+										}
+										helperText={
+											formik.touched.city &&
+											formik.errors.city
+										}
+										onChange={formik.handleChange}
+										onBlur={formik.handleBlur}
+										value={formik.values.city}
+									/>
+									<TextField
+										name="province"
+										label="Province"
+										error={
+											formik.touched.province &&
+											!!formik.errors.province
+										}
+										helperText={
+											formik.touched.province &&
+											formik.errors.province
+										}
+										onChange={formik.handleChange}
+										onBlur={formik.handleBlur}
+										value={formik.values.province}
+									/>
+								</Stack>
+							</Stack>
+						</CardContent>
+					</Card>
 				</Stack>
 			</Stack>
 			<Stack

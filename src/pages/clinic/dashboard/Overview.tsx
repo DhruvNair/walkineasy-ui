@@ -25,6 +25,7 @@ import {
 	Tooltip,
 	Typography,
 } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import { get, onValue, ref, set } from "firebase/database";
 import { doc, getDoc } from "firebase/firestore";
 import React, { useEffect } from "react";
@@ -214,8 +215,15 @@ const CardComponent2: React.FC<CardProps & { requests: number }> = ({
 				<Typography sx={{ mb: 1.5 }} color="text.secondary">
 					{content}
 				</Typography>
-				<Badge badgeContent={requests} color="success">
-					<MailIcon sx={{ fontSize: 47 }} color="action" />
+				<Badge
+					max={99}
+					badgeContent={requests}
+					overlap="circular"
+					to="/clinic/dashboard/requests"
+					component={RouterLink}
+					color="success"
+				>
+					<MailIcon sx={{ fontSize: 40 }} color="action" />
 				</Badge>
 			</CardContent>
 		</Card>
